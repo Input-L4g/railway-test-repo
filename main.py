@@ -34,3 +34,12 @@ def create_item(name: str, db: Session = Depends(get_db)):
 @app.get("/items")
 def list_items(db: Session = Depends(get_db)):
     return db.query(TestItem).all()
+
+@app.delete("/items/{id}")
+def delete_item(id: int, db: Session = Depends(get_db)):
+    item = db.get(TestItem, id)
+    db.delete(item)
+    db.commit()
+    if db.get(TestItem, id) is not None:
+        return {"success": False, "message": "Falha ao tentar remover item"}
+    return {"success": True, "message": "Item removido com sucesso."}
